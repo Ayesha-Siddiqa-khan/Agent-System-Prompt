@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud-native-service
+  labels:
+    app.kubernetes.io/name: cloud-native-service
+    app.kubernetes.io/component: backend
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: cloud-native-service
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
