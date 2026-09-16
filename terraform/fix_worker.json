@@ -1,0 +1,12 @@
+{
+  "InstanceIds": ["i-033636f2ad2fa6393"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "sed -i 's/gpg --dearmor/gpg --dearmor --yes/g' /opt/terrapilot/scripts/common-setup.sh 2>/dev/null || true",
+      "sed -i 's/gpg --dearmor/gpg --dearmor --yes/g' /var/lib/cloud/instance/scripts/part-001 2>/dev/null || true",
+      "rm -f /opt/terrapilot/status/userdata.failed",
+      "bash /var/lib/cloud/instance/scripts/part-001 &"
+    ]
+  }
+}
