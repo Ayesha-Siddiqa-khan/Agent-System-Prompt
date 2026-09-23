@@ -46,8 +46,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Shutdown complete.")
 
 
-from fastapi.openapi.docs import get_swagger_ui_html
-
 app = FastAPI(
     title=settings.SERVICE_NAME,
     version=settings.VERSION,
