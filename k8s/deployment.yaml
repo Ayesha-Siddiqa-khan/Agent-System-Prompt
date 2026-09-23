@@ -39,8 +39,8 @@ spec:
 
       containers:
         - name: service
-          image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/cloud-native-service:latest
-          imagePullPolicy: IfNotPresent
+          image: 257536659737.dkr.ecr.us-east-1.amazonaws.com/agent-system-prompt:latest
+          imagePullPolicy: Always
 
           # Container-level security hardening
           securityContext:

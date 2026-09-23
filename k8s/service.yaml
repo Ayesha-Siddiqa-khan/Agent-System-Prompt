@@ -10,11 +10,12 @@ metadata:
     prometheus.io/port: "8080"
     prometheus.io/path: "/metrics"
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app.kubernetes.io/name: cloud-native-service
   ports:
     - name: http
       port: 8080
       targetPort: http
+      nodePort: 30080
       protocol: TCP
