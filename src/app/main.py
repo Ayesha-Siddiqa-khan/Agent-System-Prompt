@@ -57,7 +57,7 @@ app = FastAPI(
 
 @app.get("/docs", include_in_schema=False)
 async def custom_scalar_docs_html():
-    """Render state-of-the-art Scalar API reference documentation."""
+    """Render state-of-the-art Scalar API reference documentation with beautiful glowing gradients."""
     content = f"""<!doctype html>
 <html lang="en">
   <head>
@@ -68,15 +68,105 @@ async def custom_scalar_docs_html():
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+      :root {{
+        --scalar-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        --scalar-font-code: 'JetBrains Mono', monospace;
+      }}
+
       body {{
         margin: 0;
         padding: 0;
-        background-color: #090d16;
+        background: #090d16;
+        color: #f8fafc;
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        position: relative;
+        overflow-x: hidden;
       }}
+
+      /* Ambient glowing neon backdrop */
+      body::before {{
+        content: '';
+        position: fixed;
+        top: -150px;
+        left: 20%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(168, 85, 247, 0.15) 45%, transparent 70%);
+        filter: blur(100px);
+        pointer-events: none;
+        z-index: 0;
+      }}
+
+      body::after {{
+        content: '';
+        position: fixed;
+        bottom: -150px;
+        right: 15%;
+        width: 550px;
+        height: 550px;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 70%);
+        filter: blur(100px);
+        pointer-events: none;
+        z-index: 0;
+      }}
+
+      /* Custom theme overrides for Scalar */
+      .dark-mode {{
+        --scalar-color-1: #f8fafc;
+        --scalar-color-2: #cbd5e1;
+        --scalar-color-3: #94a3b8;
+        --scalar-color-accent: #818cf8;
+        --scalar-background-1: #090d16;
+        --scalar-background-2: #0e1526;
+        --scalar-background-3: #131c33;
+        --scalar-background-accent: rgba(99, 102, 241, 0.12);
+        --scalar-border-color: rgba(255, 255, 255, 0.08);
+      }}
+
+      /* Gradient accent highlights on sidebar and buttons */
       .scalar-api-reference {{
-        --scalar-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-        --scalar-font-code: 'JetBrains Mono', monospace;
+        position: relative;
+        z-index: 1;
+        background: transparent !important;
+      }}
+
+      /* Modern header badge and title gradient */
+      .section-header h1, .scalar-card .title {{
+        background: linear-gradient(135deg, #ffffff 20%, #a5b4fc 60%, #38bdf8 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+      }}
+
+      /* Radiant gradient on interactive execute buttons */
+      button[type="submit"], .scalar-button, .show-more-button {{
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35) !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+      }}
+
+      button[type="submit"]:hover, .scalar-button:hover {{
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 24px rgba(99, 102, 241, 0.55) !important;
+      }}
+
+      /* Gradient borders on code block containers */
+      .scalar-card {{
+        border: 1px solid rgba(99, 102, 241, 0.2) !important;
+        background: rgba(14, 21, 38, 0.7) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+        border-radius: 16px !important;
+      }}
+
+      /* HTTP Method Badges with glowing gradients */
+      .badge-get {{
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.25)) !important;
+        color: #38bdf8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.4) !important;
+        font-weight: 700 !important;
       }}
     </style>
   </head>
@@ -86,7 +176,7 @@ async def custom_scalar_docs_html():
     <script>
       Scalar.createApiReference('#app', {{
         url: '/openapi.json',
-        theme: 'moon',
+        theme: 'deepSpace',
         layout: 'modern',
         showSidebar: true,
         darkMode: true,
