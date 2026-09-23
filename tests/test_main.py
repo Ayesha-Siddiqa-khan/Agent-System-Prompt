@@ -1,4 +1,4 @@
-"""Comprehensive unit tests for the cloud-native FastAPI microservice."""
+"""Comprehensive unit tests for the cloud-native FastAPI microservice and Agent Studio."""
 
 import pytest
 from fastapi.testclient import TestClient
@@ -14,9 +14,17 @@ def client():
         yield test_client
 
 
-def test_root_endpoint(client):
-    """Verify GET / returns service identity, environment, and 200 OK."""
-    response = client.get("/")
+def test_root_endpoint_html(client):
+    """Verify GET / returns 200 OK and HTML content for web browsers."""
+    response = client.get("/", headers={"Accept": "text/html"})
+    assert response.status_code == 200
+    assert "text/html" in response.headers.get("content-type", "")
+    assert "Agent System Prompt Studio" in response.text
+
+
+def test_root_endpoint_json(client):
+    """Verify GET / with format=json returns service identity and environment."""
+    response = client.get("/?format=json")
     assert response.status_code == 200
     data = response.json()
     assert "service" in data
@@ -54,12 +62,67 @@ def test_ready_endpoint_not_ready(client):
 
 def test_metrics_endpoint(client):
     """Verify GET /metrics returns 200 OK and Prometheus metrics format."""
-    # Trigger a request to populate instrumented metrics
     client.get("/")
     response = client.get("/metrics")
     assert response.status_code == 200
     assert "text/plain" in response.headers.get("content-type", "")
     assert len(response.text) > 0
+
+
+def test_api_templates(client):
+    """Verify GET /api/templates returns pre-configured battle-tested archetypes."""
+    response = client.get("/api/templates")
+    assert response.status_code == 200
+    templates = response.json()
+    assert "devops_architect" in templates
+    assert "k8s_troubleshooter" in templates
+    assert "security_auditor" in templates
+    assert "code_reviewer" in templates
+
+
+def test_api_generate_prompt(client):
+    """Verify POST /api/generate-prompt synthesizes prompts and model payloads."""
+    payload = {
+        "persona": "devops_architect",
+        "task_goal": "Configure automated canary deployments with Flagger and Istio.",
+        "constraints": ["No downtime", "Zero static secrets"],
+        "output_format": "markdown",
+        "temperature": 0.2,
+    }
+    response = client.post("/api/generate-prompt", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "system_prompt" in data
+    assert "Flagger and Istio" in data["system_prompt"]
+    assert data["token_estimate"] > 0
+    assert "anthropic_format" in data
+    assert "openai_format" in data
+
+
+def test_api_validate_prompt(client):
+    """Verify POST /api/validate-prompt audits prompts and returns quality scorecard."""
+    sample_prompt = (
+        "You are an Elite Cloud DevOps Architect. "
+        "Strict rules: Never hardcode secrets. Follow zero-trust principles. "
+        "Output format: Valid JSON only."
+    )
+    response = client.post("/api/validate-prompt", json={"prompt": sample_prompt})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["score"] >= 80
+    assert data["has_role_definition"] is True
+    assert data["has_constraints"] is True
+    assert data["has_output_spec"] is True
+
+
+def test_api_cluster_telemetry(client):
+    """Verify GET /api/cluster-telemetry returns node and cluster health."""
+    response = client.get("/api/cluster-telemetry")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert len(data["nodes"]) >= 2
+    assert len(data["pods"]) >= 1
 
 
 def test_configuration_environment_override(monkeypatch):
