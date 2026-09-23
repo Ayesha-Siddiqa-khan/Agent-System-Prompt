@@ -1,0 +1,9 @@
+{
+  "commands": [
+    "curl -s http://127.0.0.1:80/healthz",
+    "echo \"\"",
+    "curl -s http://127.0.0.1:80/api/cluster-telemetry",
+    "echo \"\"",
+    "curl -s -X POST http://127.0.0.1:80/api/validate-prompt -H 'Content-Type: application/json' -d '{\"prompt\":\"You are an Elite SRE. Never expose secrets. Return JSON.\"}'"
+  ]
+}
