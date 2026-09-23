@@ -194,6 +194,80 @@ SCALAR_HTML_TEMPLATE = """<!doctype html>
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.4; transform: scale(1.2); }
       }
+      /* Global Scalar Theme Overrides that penetrate shadow/inner roots */
+      .scalar-api-reference,
+      .dark-mode {
+        --scalar-color-accent: #6366f1 !important;
+        --scalar-background-1: #070a13 !important;
+        --scalar-background-2: #0e1526 !important;
+        --scalar-background-3: #141f36 !important;
+        --scalar-background-accent: rgba(99, 102, 241, 0.2) !important;
+        --scalar-border-color: rgba(99, 102, 241, 0.2) !important;
+      }
+
+      /* Glow Title Effect */
+      h1, .section-header h1 {
+        background: linear-gradient(135deg, #ffffff 10%, #c084fc 45%, #38bdf8 90%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        font-weight: 800 !important;
+        filter: drop-shadow(0 2px 12px rgba(192, 132, 252, 0.3));
+      }
+
+      /* Translucent card backdrops with vibrant gradient borders */
+      .scalar-card,
+      [class*="scalar-card"],
+      [class*="client-libraries"] {
+        background: rgba(14, 21, 38, 0.8) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+        border-radius: 16px !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+        box-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(99, 102, 241, 0.15) !important;
+      }
+
+      /* Glowing neon pills and buttons */
+      button[type="submit"],
+      .scalar-button,
+      [class*="button-primary"],
+      [class*="test-request"] {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5) !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+
+      button[type="submit"]:hover,
+      .scalar-button:hover {
+        transform: translateY(-2px) scale(1.02) !important;
+        box-shadow: 0 8px 30px rgba(168, 85, 247, 0.7) !important;
+      }
+
+      /* Active sidebar highlighting with glowing vertical strip */
+      [class*="sidebar"] {
+        background: rgba(7, 10, 19, 0.85) !important;
+        border-right: 1px solid rgba(99, 102, 241, 0.2) !important;
+        backdrop-filter: blur(20px) !important;
+      }
+
+      [class*="sidebar-item-active"],
+      [class*="active-item"] {
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.3) 0%, rgba(6, 182, 212, 0.08) 100%) !important;
+        border-left: 3px solid #38bdf8 !important;
+        color: #38bdf8 !important;
+        box-shadow: inset 4px 0 12px rgba(56, 189, 248, 0.2) !important;
+      }
+
+      /* HTTP Method Badges with bright electric border */
+      [class*="badge-get"], [class*="method-get"] {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.25)) !important;
+        border: 1px solid #38bdf8 !important;
+        color: #38bdf8 !important;
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.35) !important;
+      }
     </style>
   </head>
   <body>
@@ -220,85 +294,6 @@ SCALAR_HTML_TEMPLATE = """<!doctype html>
     <div id="app"></div>
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
     <script>
-      const scalarCustomStyles = `
-        :root, .dark-mode {
-          --scalar-color-accent: #818cf8 !important;
-          --scalar-background-1: #070a13 !important;
-          --scalar-background-2: #0e1424 !important;
-          --scalar-background-3: #141d33 !important;
-          --scalar-background-accent: rgba(99, 102, 241, 0.18) !important;
-          --scalar-border-color: rgba(255, 255, 255, 0.08) !important;
-        }
-
-        .scalar-api-reference {
-          background: transparent !important;
-        }
-
-        /* Beautiful glowing header with gradient title */
-        .section-header h1, h1, .scalar-card-title {
-          background: linear-gradient(135deg, #ffffff 15%, #a5b4fc 55%, #38bdf8 100%) !important;
-          -webkit-background-clip: text !important;
-          -webkit-text-fill-color: transparent !important;
-          font-weight: 800 !important;
-          letter-spacing: -0.02em !important;
-        }
-
-        /* Gradient glowing cards with glassmorphism */
-        .scalar-card, .card, .client-libraries, .scalar-card-content {
-          background: rgba(14, 20, 36, 0.75) !important;
-          border: 1px solid rgba(99, 102, 241, 0.25) !important;
-          border-radius: 16px !important;
-          backdrop-filter: blur(24px) !important;
-          -webkit-backdrop-filter: blur(24px) !important;
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
-        }
-
-        /* Gradient radiant action buttons */
-        button.scalar-button, button[type="submit"], .scalar-card-footer button, .test-request-button, .show-more-button {
-          background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #06b6d4 100%) !important;
-          color: #ffffff !important;
-          border: none !important;
-          border-radius: 10px !important;
-          font-weight: 600 !important;
-          box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45) !important;
-          transition: all 0.25s ease !important;
-        }
-
-        button.scalar-button:hover, button[type="submit"]:hover {
-          transform: translateY(-2px) !important;
-          box-shadow: 0 8px 28px rgba(99, 102, 241, 0.65) !important;
-        }
-
-        /* Sidebar glowing border & active item styling */
-        .sidebar {
-          background: rgba(7, 10, 19, 0.7) !important;
-          border-right: 1px solid rgba(99, 102, 241, 0.2) !important;
-          backdrop-filter: blur(20px) !important;
-        }
-
-        .sidebar-item-active, .sidebar-heading-active {
-          background: linear-gradient(90deg, rgba(99, 102, 241, 0.25) 0%, rgba(6, 182, 212, 0.08) 100%) !important;
-          border-left: 3px solid #818cf8 !important;
-          color: #38bdf8 !important;
-          font-weight: 700 !important;
-        }
-
-        /* Endpoint badges with vibrant glowing neon pill */
-        .badge, [class*="badge-"] {
-          border-radius: 9999px !important;
-          font-weight: 700 !important;
-          text-transform: uppercase !important;
-          letter-spacing: 0.05em !important;
-        }
-
-        .badge-get, .method-get {
-          background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.25)) !important;
-          border: 1px solid rgba(56, 189, 248, 0.5) !important;
-          color: #38bdf8 !important;
-          box-shadow: 0 0 12px rgba(56, 189, 248, 0.2) !important;
-        }
-      `;
-
       Scalar.createApiReference('#app', {
         url: '/openapi.json',
         theme: 'deepSpace',
@@ -307,7 +302,6 @@ SCALAR_HTML_TEMPLATE = """<!doctype html>
         darkMode: true,
         hideDarkModeToggle: false,
         searchHotKey: 'k',
-        customCss: scalarCustomStyles,
       })
     </script>
   </body>
