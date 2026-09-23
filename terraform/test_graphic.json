@@ -1,0 +1,5 @@
+{
+  "commands": [
+    "curl -s -o /dev/null -w '%{http_code} %{content_type} %{size_download}\\n' http://127.0.0.1:80/static/hero_graphic.jpg"
+  ]
+}
