@@ -46,12 +46,161 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Shutdown complete.")
 
 
+from fastapi.openapi.docs import get_swagger_ui_html
+
 app = FastAPI(
     title=settings.SERVICE_NAME,
     version=settings.VERSION,
     description="Production-grade cloud-native microservice optimized for Kubernetes.",
     lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
 )
+
+SWAGGER_DARK_CSS = """
+body {
+  background: #090d16 !important;
+  color: #f1f5f9 !important;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+.swagger-ui {
+  color: #e2e8f0 !important;
+}
+.swagger-ui .topbar {
+  display: none !important;
+}
+.swagger-ui .info {
+  margin: 30px 0 !important;
+  background: rgba(18, 24, 38, 0.75) !important;
+  padding: 30px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+  backdrop-filter: blur(16px) !important;
+}
+.swagger-ui .info .title {
+  color: #ffffff !important;
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+.swagger-ui .info p, .swagger-ui .info li, .swagger-ui .info table {
+  color: #94a3b8 !important;
+}
+.swagger-ui .scheme-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 10px 0 !important;
+}
+.swagger-ui .opblock-tag {
+  color: #a5b4fc !important;
+  font-size: 1.3rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 15px 0 !important;
+}
+.swagger-ui .opblock {
+  border-radius: 16px !important;
+  background: rgba(18, 24, 38, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+  margin: 0 0 20px !important;
+  backdrop-filter: blur(12px) !important;
+  transition: transform 0.2s ease, border-color 0.2s ease !important;
+}
+.swagger-ui .opblock:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+}
+.swagger-ui .opblock .opblock-summary {
+  padding: 14px 20px !important;
+  border-bottom: none !important;
+}
+.swagger-ui .opblock .opblock-summary-method {
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  padding: 6px 14px !important;
+  text-shadow: none !important;
+}
+.swagger-ui .opblock-get .opblock-summary-method {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  color: #ffffff !important;
+}
+.swagger-ui .opblock-get {
+  background: rgba(99, 102, 241, 0.06) !important;
+  border-color: rgba(99, 102, 241, 0.2) !important;
+}
+.swagger-ui .opblock .opblock-summary-path {
+  color: #f8fafc !important;
+  font-weight: 600 !important;
+  font-size: 1.05rem !important;
+}
+.swagger-ui .opblock .opblock-summary-description {
+  color: #94a3b8 !important;
+}
+.swagger-ui .opblock-body {
+  background: rgba(10, 15, 26, 0.7) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+.swagger-ui table thead tr th, .swagger-ui table thead tr td {
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.swagger-ui .response-col_status {
+  color: #10b981 !important;
+  font-weight: 700 !important;
+}
+.swagger-ui .btn.execute {
+  background: linear-gradient(135deg, #6366f1, #06b6d4) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
+}
+.swagger-ui .btn.try-out__btn {
+  border-radius: 8px !important;
+  color: #a5b4fc !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+.swagger-ui pre {
+  background: #050811 !important;
+  color: #38bdf8 !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+"""
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    content = f"""<!DOCTYPE html>
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+<title>{settings.SERVICE_NAME} - Swagger UI</title>
+<style>{SWAGGER_DARK_CSS}</style>
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script>
+const ui = SwaggerUIBundle({{
+    url: '/openapi.json',
+    dom_id: '#swagger-ui',
+    layout: 'BaseLayout',
+    deepLinking: true,
+    showExtensions: true,
+    showCommonExtensions: true
+}})
+</script>
+</body>
+</html>"""
+    return HTMLResponse(content=content)
 
 # Setup Prometheus metrics instrumentation
 instrumentator = Instrumentator(
