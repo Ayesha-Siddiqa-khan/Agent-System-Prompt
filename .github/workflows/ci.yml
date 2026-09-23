@@ -88,7 +88,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+            ${{ steps.login-ecr.outputs.registry }}/agent-system-prompt:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/agent-system-prompt:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
