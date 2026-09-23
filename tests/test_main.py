@@ -125,6 +125,15 @@ def test_api_cluster_telemetry(client):
     assert len(data["pods"]) >= 1
 
 
+def test_hero_graphic_endpoint(client):
+    """Verify GET /static/hero_graphic.jpg returns 200 OK and JPEG image data."""
+    response = client.get("/static/hero_graphic.jpg")
+    assert response.status_code == 200
+    assert response.headers.get("content-type") == "image/jpeg"
+    assert len(response.content) > 1000
+
+
+
 def test_configuration_environment_override(monkeypatch):
     """Verify 12-factor configuration loads correctly from environment variables."""
     monkeypatch.setenv("PORT", "9090")

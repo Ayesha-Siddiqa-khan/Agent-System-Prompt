@@ -7,6 +7,8 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any
 
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
@@ -533,8 +535,8 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
     /* Hero Section */
     .hero {
       text-align: center;
-      max-width: 850px;
-      margin: 0 auto 44px auto;
+      max-width: 900px;
+      margin: 0 auto 36px auto;
     }
     .hero-badge {
       display: inline-flex;
@@ -567,6 +569,80 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
       font-size: 1.15rem;
       color: var(--text-muted);
       line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    /* Graphic Hero Showcase */
+    .hero-graphics-container {
+      position: relative;
+      width: 100%;
+      max-width: 1020px;
+      margin: 0 auto 48px auto;
+      border-radius: 24px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.6), rgba(6, 182, 212, 0.5), rgba(168, 85, 247, 0.3));
+      box-shadow: 0 20px 60px -15px rgba(99, 102, 241, 0.4), 0 0 30px rgba(6, 182, 212, 0.25);
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .hero-graphics-container:hover {
+      transform: translateY(-4px) scale(1.005);
+    }
+    .hero-graphics-inner {
+      position: relative;
+      border-radius: 23px;
+      overflow: hidden;
+      background: #080c18;
+    }
+    .hero-img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+      filter: contrast(1.08) saturate(1.15);
+      transition: transform 0.6s ease;
+    }
+    .hero-graphics-container:hover .hero-img {
+      transform: scale(1.03);
+    }
+    .hero-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(7, 9, 19, 0.1) 0%, rgba(7, 9, 19, 0.8) 85%, #070913 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 32px 36px;
+    }
+    .graphic-badge-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .graphic-tag {
+      background: rgba(14, 21, 38, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #38bdf8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      backdrop-filter: blur(10px);
+    }
+    .graphic-headline {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+    .graphic-sub {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      max-width: 650px;
     }
 
     /* Studio Layout: 2 Columns */
@@ -908,6 +984,22 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
       <h1>Production-Ready Agent System Prompts</h1>
       <p>Configure, synthesize, lint, and export battle-tested AI Agent system instructions tailored for DevOps, Kubernetes, Cloud Security, and Code Quality automation.</p>
     </header>
+
+    <!-- Graphic Hero Showcase -->
+    <div class="hero-graphics-container">
+      <div class="hero-graphics-inner">
+        <img src="/static/hero_graphic.jpg" alt="Autonomous AI Neural Core" class="hero-img" loading="eager" />
+        <div class="hero-img-overlay">
+          <div class="graphic-badge-row">
+            <span class="graphic-tag">NEURAL SYNAPSE CORE</span>
+            <span class="graphic-tag" style="border-color: #34d399; color: #34d399;">REASONING ENGINE ACTIVE</span>
+            <span class="graphic-tag" style="border-color: #a855f7; color: #c084fc;">ZERO-LEAK GUARDRAILS</span>
+          </div>
+          <div class="graphic-headline">Autonomous Agent Architecture</div>
+          <div class="graphic-sub">High-throughput reasoning matrix with deterministic constraint adherence, structured schema validation, and real-time Kubernetes cluster telemetry.</div>
+        </div>
+      </div>
+    </div>
 
     <!-- Studio Interactive Workspace -->
     <div class="studio-grid">
@@ -1469,6 +1561,21 @@ async def cluster_telemetry() -> ClusterTelemetryResponse:
         container_runtime="containerd://2.2.1",
         uptime_seconds=86400,
     )
+
+
+@app.get(
+    "/static/hero_graphic.jpg",
+    tags=["Static"],
+    summary="Hero Visual Graphic",
+    response_description="JPEG stream of the neural core AI agent visual graphic",
+)
+async def get_hero_graphic() -> Response:
+    """Serve the high-definition neural core graphic for the Agent Studio UI."""
+    graphic_path = Path(__file__).parent / "static" / "hero_graphic.jpg"
+    if not graphic_path.exists():
+        raise HTTPException(status_code=404, detail="Graphic asset not found")
+    content = graphic_path.read_bytes()
+    return Response(content=content, media_type="image/jpeg")
 
 
 @app.get(
