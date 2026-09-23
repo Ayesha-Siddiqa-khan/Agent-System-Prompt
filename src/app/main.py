@@ -106,9 +106,117 @@ SCALAR_HTML_TEMPLATE = """<!doctype html>
         pointer-events: none;
         z-index: 0;
       }
+
+      /* Top navigation luxury bar */
+      .top-nav {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 28px;
+        background: rgba(7, 10, 19, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      }
+
+      .top-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: #f8fafc;
+        font-weight: 800;
+        font-size: 1.1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .top-logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #6366f1, #06b6d4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .top-link {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+      }
+
+      .top-link:hover {
+        color: #f8fafc;
+        border-color: rgba(99, 102, 241, 0.3);
+        background: rgba(99, 102, 241, 0.1);
+      }
+
+      .top-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #34d399;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 9999px;
+      }
+
+      .pulse-dot {
+        width: 7px;
+        height: 7px;
+        background: #10b981;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #10b981;
+        animation: pulseDot 2s infinite;
+      }
+
+      @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.2); }
+      }
     </style>
   </head>
   <body>
+    <!-- Floating Luxury Header -->
+    <header class="top-nav">
+      <a href="/" class="top-brand">
+        <div class="top-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span>__SERVICE_NAME__</span>
+      </a>
+      <div class="top-actions">
+        <a href="/" class="top-link">← Dashboard</a>
+        <a href="/metrics" target="_blank" class="top-link">Metrics</a>
+        <div class="top-pill">
+          <span class="pulse-dot"></span>
+          <span>v1.0.0 Live on K8s</span>
+        </div>
+      </div>
+    </header>
+
     <div id="app"></div>
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
     <script>
