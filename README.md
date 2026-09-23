@@ -248,8 +248,14 @@ aws ssm get-parameter --name "/terrapilot/Agent-System-Prompt/dev/kubernetes/joi
 
 The join token is temporary. Rotate or delete it after workers have joined:
 
-```bash
-sudo kubeadm token create --print-join-command
-aws ssm delete-parameter --name "/terrapilot/Agent-System-Prompt/dev/kubernetes/join-command/private" --region "us-east-1"
-```
 
+### Connecting to Cluster via Kubeconfig
+
+To authenticate against the control plane from local CLI or CI/CD pipelines:
+1. Copy the public base64 kubeconfig.
+2. In GitHub repository **Settings** → **Secrets and variables** → **Actions**, add a new secret named `KUBE_CONFIG_DATA` with the base64 content.
+3. For local `kubectl` usage, decode to your local kubeconfig file:
+   ```bash
+   echo "<base64_string>" | base64 -d > ~/.kube/config
+   kubectl get nodes
+   ```
