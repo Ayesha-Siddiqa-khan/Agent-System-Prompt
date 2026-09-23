@@ -443,6 +443,48 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
       pointer-events: none;
     }
 
+    /* Crazy Live Interactive Particle/Matrix Canvas */
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+      transition: opacity 0.5s ease;
+    }
+
+    body.overdrive-mode #matrix-canvas {
+      opacity: 0.85;
+      filter: hue-rotate(90deg) contrast(1.3);
+    }
+
+    body.overdrive-mode {
+      animation: crazyShake 0.4s infinite alternate;
+    }
+
+    @keyframes crazyShake {
+      0% { filter: hue-rotate(0deg); }
+      50% { filter: hue-rotate(180deg) drop-shadow(0 0 15px rgba(236, 72, 153, 0.6)); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    .overdrive-btn {
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #06b6d4 100%) !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.7), 0 0 50px rgba(139, 92, 246, 0.4) !important;
+      animation: pulseGlow 1.5s infinite alternate !important;
+      cursor: pointer;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1); box-shadow: 0 0 15px rgba(236, 72, 153, 0.6); }
+      100% { transform: scale(1.05); box-shadow: 0 0 35px rgba(6, 182, 212, 0.9), 0 0 60px rgba(236, 72, 153, 0.7); }
+    }
+
     .container {
       max-width: 1320px;
       margin: 0 auto;
@@ -956,6 +998,7 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
 <body>
   <div class="glow-1"></div>
   <div class="glow-2"></div>
+  <canvas id="matrix-canvas"></canvas>
 
   <div class="container">
     <!-- Navbar -->
@@ -969,6 +1012,9 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
         <span>Agent System Prompt Studio</span>
       </a>
       <div class="nav-actions">
+        <button class="nav-btn overdrive-btn" onclick="toggleOverdrive()" id="overdriveBtn">
+          ⚡ CYBER OVERDRIVE
+        </button>
         <a href="/docs" class="nav-btn">Scalar API Docs</a>
         <a href="/metrics" target="_blank" class="nav-btn">Prometheus</a>
         <div class="status-pill">
@@ -1216,6 +1262,7 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
       const temp = parseFloat(document.getElementById('tempSelect').value);
 
       try {
+        playCyberSound('matrix');
         const res = await fetch('/api/generate-prompt', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1230,7 +1277,8 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
         const data = await res.json();
         document.getElementById('promptEditor').value = data.system_prompt;
         updateStats();
-        showToast('Generated fresh system prompt!');
+        playCyberSound('laser');
+        showToast('⚡ Neural prompt synthesized with zero hallucinations!');
       } catch (err) {
         alert('Error generating prompt: ' + err.message);
       }
@@ -1239,6 +1287,7 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
     async function validateCurrentPrompt() {
       const text = document.getElementById('promptEditor').value;
       try {
+        playCyberSound('warp');
         const res = await fetch('/api/validate-prompt', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1252,7 +1301,8 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
         setAuditCheck('checkOutput', report.has_output_spec);
         setAuditCheck('checkGuardrails', report.has_safety_guardrails);
 
-        showToast('Evaluation complete: Score ' + report.score + '/100');
+        playCyberSound('laser');
+        showToast('🛡️ Security Audit Complete: Grade ' + report.grade + ' (' + report.score + '/100)');
       } catch (err) {
         alert('Error validating prompt: ' + err.message);
       }
@@ -1331,6 +1381,107 @@ STUDIO_PAGE_HTML = """<!DOCTYPE html>
         document.getElementById('k8sUptime').innerText = data.uptime_seconds + 's';
       } catch (err) {
         console.error('Telemetry error:', err);
+      }
+    }
+
+    // =========================================================
+    // CRAZY FEATURE: Web Audio Synthesizer (Zero External Assets)
+    // =========================================================
+    let audioCtx = null;
+    function playCyberSound(type) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === 'warp') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(150, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.35);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'laser') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } else if (type === 'matrix') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(660, now + 0.08);
+          osc.frequency.setValueAtTime(880, now + 0.16);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+          osc.start(now);
+          osc.stop(now + 0.28);
+        }
+      } catch (e) {
+        console.warn('Audio not allowed yet:', e);
+      }
+    }
+
+    // =========================================================
+    // CRAZY FEATURE: Dynamic Matrix Particle Rain Canvas
+    // =========================================================
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const chars = '0123456789ABCDEF010101010101XYZK8SAGENT';
+    const fontSize = 16;
+    let columns = Math.floor(width / fontSize);
+    let drops = Array(columns).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(7, 9, 19, 0.07)';
+      ctx.fillRect(0, 0, width, height);
+
+      const isOverdrive = document.body.classList.contains('overdrive-mode');
+      ctx.fillStyle = isOverdrive ? '#ec4899' : '#06b6d4';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+      requestAnimationFrame(drawMatrix);
+    }
+    requestAnimationFrame(drawMatrix);
+
+    // =========================================================
+    // CRAZY FEATURE: Cyber Overdrive Mode Toggle
+    // =========================================================
+    function toggleOverdrive() {
+      const isOver = document.body.classList.toggle('overdrive-mode');
+      const btn = document.getElementById('overdriveBtn');
+      if (isOver) {
+        btn.innerText = '🔥 WARP OVERDRIVE ACTIVE';
+        playCyberSound('warp');
+        showToast('🚀 CYBER OVERDRIVE ENGAGED: SYNAPSE CLOCK MAXIMIZED!');
+      } else {
+        btn.innerText = '⚡ CYBER OVERDRIVE';
+        playCyberSound('laser');
+        showToast('Overdrive normal operational state restored.');
       }
     }
 
