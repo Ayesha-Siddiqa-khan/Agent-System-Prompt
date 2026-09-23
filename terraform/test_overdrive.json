@@ -1,0 +1,6 @@
+{
+  "commands": [
+    "curl -s http://127.0.0.1:80/ | grep -o 'CYBER OVERDRIVE'",
+    "curl -s http://127.0.0.1:80/ | grep -o 'matrix-canvas'"
+  ]
+}
